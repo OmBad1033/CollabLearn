@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "dev": "nodemon backend/server.js",
+    "start": "nodemon backend/server.js",
+    "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "name": "collablearn",
+  "version": "1.0.0",
+  "description": "Platform where users can lean and collab together in learning and building something great",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC"
+}
