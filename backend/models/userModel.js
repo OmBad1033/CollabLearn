@@ -8,6 +8,19 @@ const userSchema = new mongoose.Schema(
     avatar: { type: mongoose.Schema.Types.String },
     isLoggedIn: { type: Boolean, default: false },
     token: { type: mongoose.Schema.Types.String, default: null },
+    accountType: {
+        type: String,
+        enum: ["public", "private"],
+        default: "public"
+    },
+    followersCount: {
+        type: Number,
+        default: 0
+    },
+    followingCount: {
+        type: Number,
+        default: 0
+    }
   },
   { timestamps: true }
 );
