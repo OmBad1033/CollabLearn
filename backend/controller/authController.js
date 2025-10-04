@@ -3,10 +3,11 @@ import { otpGenerator } from "../helper/otpGenerator.js";
 import { OTP } from "../models/otpModel.js";
 import { sendMail } from "../utils/email.js";
 import bcrypt from "bcrypt";
+import passport from "passport";
 
 const status = (req, res) => {
-  console.log("auth/status", request.user);
-  return request.user ? response.send(request.user) : response.sendStatus(401);
+  console.log("auth/status", req.user);
+  return req.user ? res.send(req.user) : res.sendStatus(401);
 };
 
 const logout = (req, res) => {
@@ -86,4 +87,28 @@ const verifyOtp = async (req, res) => {
   }
 };
 
-export { status, logout, requestOTP, verifyOtp };
+const localLogin = async (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) return next(err);
+
+    if (!user) {
+      return res.status(400).json({ message: info?.message || "Login failed" });
+    }
+
+    // Log the user into the session
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+
+      return res.status(200).json({
+        message: "Login successful",
+        user: {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+        },
+      });
+    });
+  })(req, res, next);
+};
+
+export { status, logout, requestOTP, verifyOtp, localLogin};

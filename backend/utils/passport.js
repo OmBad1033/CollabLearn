@@ -1,5 +1,7 @@
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as LocalStrategy } from "passport-local";
 import passport from "passport";
+import bycrpt from "bcrypt"
 import { User } from "../models/userModel.js";
 import dotenv from "dotenv";
 
@@ -48,4 +50,20 @@ passport.use(
       }
     }
   )
+);
+
+passport.use(
+  new LocalStrategy(async (username, password, done) => {
+    try {
+      const user = await User.findOne({ username });
+      if (!user) return done(null, false, { message: "User not found" });
+      const isMatch = await bycrpt.compare(password, user.password);
+      if (!isMatch) {
+        return done(null, false, { message: "Invalid credentials" });
+      }
+      return done(null, user);
+    } catch (error) {
+      return done(error);
+    }
+  })
 );
