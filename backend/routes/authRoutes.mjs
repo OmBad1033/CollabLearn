@@ -1,7 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
 import authCheck from "../middleware/protectedRoute.js";
-import { logout, status } from "../controller/authController.js";
+import { logout, status, requestOTP } from "../controller/authController.js";
 
 const router = Router();
 
@@ -19,5 +19,7 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/" }),
   status
 );
+
+router.post("/request-otp",requestOTP);
 
 export default router;

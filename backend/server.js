@@ -6,7 +6,7 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import passport from "passport";
 import routes from "./routes/index.mjs"
-import "./config/passport.js"
+import "./utils/passport.js"
 
 const app = express();
 dotenv.config();

@@ -1,4 +1,4 @@
-import { Group } from "../models/groupModel";
+import { Group } from "../models/groupModel.js";
 
 const createGroup = async (req, res) => {
   try {

@@ -5,7 +5,9 @@
     "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "bcrypt": "^6.0.0",
+    "express": "^5.1.0",
+    "nodemailer": "^7.0.6"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
