@@ -2,6 +2,7 @@ import { User } from "../models/userModel.js";
 import { otpGenerator } from "../helper/otpGenerator.js";
 import { OTP } from "../models/otpModel.js";
 import { sendMail } from "../utils/email.js";
+import bcrypt from "bcrypt";
 
 const status = (req, res) => {
   console.log("auth/status", request.user);
@@ -42,8 +43,7 @@ const requestOTP = async (req, res) => {
 
     await OTP.findOneAndUpdate(
       { email },
-      { otp },
-      { expiresAt },
+      { otp, expiresAt },
       { upsert: true, new: true }
     );
 
@@ -60,4 +60,30 @@ const requestOTP = async (req, res) => {
   }
 };
 
-export { status, logout, requestOTP };
+const verifyOtp = async (req, res) => {
+  try {
+    const { email, username, password, otp } = req.body;
+    const record = await OTP.findOne({ email });
+
+    if (!record) return res.status(400).json({ message: "OTP not found" });
+    if (record.expiresAt < new Date())
+      return res.status(400).json({ message: "OTP expired" });
+    if (record.otp !== otp)
+      return res.status(400).json({ message: "Invalid OTP" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({
+      email,
+      username,
+      password: hashedPassword,
+    });
+    await newUser.save();
+    await OTP.deleteOne({ email });
+    res.status(201).json({ message: "User registered successfully", newUser });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+};
+
+export { status, logout, requestOTP, verifyOtp };

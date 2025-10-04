@@ -1,7 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
 import authCheck from "../middleware/protectedRoute.js";
-import { logout, status, requestOTP } from "../controller/authController.js";
+import { logout, status, requestOTP, verifyOtp } from "../controller/authController.js";
 
 const router = Router();
 
@@ -21,5 +21,8 @@ router.get(
 );
 
 router.post("/request-otp",requestOTP);
+
+router.post("/verify-otp", verifyOtp)
+
 
 export default router;
