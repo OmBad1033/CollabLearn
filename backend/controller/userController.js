@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Follow from "../models/followModel.js";
+import { Follow } from "../models/followModel.js";
 import { User } from "../models/userModel.js";
 
 const follow = async (req, res) => {
@@ -41,7 +41,7 @@ const follow = async (req, res) => {
 
       await currentUser.save({ session });
       await followingUser.save({ session });
-        
+
       await session.commitTransaction();
       session.endSession();
 
@@ -76,4 +76,4 @@ const follow = async (req, res) => {
   }
 };
 
-export  {follow};
+export { follow };
