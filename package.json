@@ -4,11 +4,7 @@
     "start": "nodemon backend/server.js",
     "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
   },
-  "dependencies": {
-    "bcrypt": "^6.0.0",
-    "express": "^5.1.0",
-    "nodemailer": "^7.0.6"
-  },
+  "dependencies": {},
   "devDependencies": {
     "nodemon": "^3.1.10"
   },
