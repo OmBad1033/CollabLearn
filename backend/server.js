@@ -5,8 +5,10 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import passport from "passport";
-import routes from "./routes/index.mjs"
-import "./utils/passport.js"
+import routes from "./routes/index.mjs";
+import "./utils/passport.js";
+import cors from "cors";
+
 
 const app = express();
 dotenv.config();
@@ -16,6 +18,12 @@ mongoose
   .then(() => console.log("Connected to database"))
   .catch((e) => console.log(e));
 
+app.use(
+  cors({
+    origin: "http://localhost:3000", // your Next.js frontend
+    credentials: true, // important for cookies
+  })
+);
 app.use(express.json());
 app.use(cookieParser("HelloWorld"));
 app.use(
@@ -38,6 +46,3 @@ app.use(routes);
 app.listen(port, () => {
   console.log("Server Started", port);
 });
-
-
-

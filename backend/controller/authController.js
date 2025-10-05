@@ -10,6 +10,11 @@ const status = (req, res) => {
   return req.user ? res.send(req.user) : res.sendStatus(401);
 };
 
+const googleCallback = (req, res) => {
+    //will redirect to frontend staus page
+  return res.redirect("http://localhost:3000/status");
+};
+
 const logout = (req, res) => {
   req.logout(function (err) {
     if (err) {
@@ -111,4 +116,4 @@ const localLogin = async (req, res, next) => {
   })(req, res, next);
 };
 
-export { status, logout, requestOTP, verifyOtp, localLogin};
+export { status, logout, requestOTP, verifyOtp, localLogin, googleCallback};
