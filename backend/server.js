@@ -28,11 +28,12 @@ app.use(express.json());
 app.use(cookieParser("HelloWorld"));
 app.use(
   session({
-    secret: "new web project",
+    secret: process.env.SESSION_SECRET,
     saveUninitialized: true,
     resave: false,
     cookie: {
-      maxAge: 60000 * 60,
+      maxAge: 24 * 60 * 60 * 1000, // 1 days
+      httpOnly: true
     },
     store: MongoStore.create({
       client: mongoose.connection.getClient(),

@@ -10,12 +10,12 @@ const status = (req, res) => {
   return req.user ? res.send(req.user) : res.sendStatus(401);
 };
 
-const googleCallback = (req, res) => {
+const callback = (req, res) => {
     //will redirect to frontend staus page
   return res.redirect("http://localhost:3000/status");
 };
 
-const logout = (req, res) => {
+const logout = (req, res, next) => {
   req.logout(function (err) {
     if (err) {
       return res.sendStatus(500);
@@ -24,10 +24,10 @@ const logout = (req, res) => {
     req.session.destroy((err) => {
       if (err) {
         console.error("Failed to destroy session:", err);
-        return res.sendStatus(500);
+        next(err);
       }
       res.clearCookie("connect.sid"); // use your session cookie name
-      return res.sendStatus(200);
+      next();
     });
   });
 };
@@ -66,7 +66,7 @@ const requestOTP = async (req, res) => {
   }
 };
 
-const verifyOtp = async (req, res) => {
+const verifyOtp = async (req, res, next) => {
   try {
     const { email, username, password, otp } = req.body;
     const record = await OTP.findOne({ email });
@@ -85,7 +85,17 @@ const verifyOtp = async (req, res) => {
     });
     await newUser.save();
     await OTP.deleteOne({ email });
-    res.status(201).json({ message: "User registered successfully", newUser });
+    req.logIn(newUser, (err) => {
+      if (err) return next(err);
+      return res.status(200).json({
+        message: "Login successful",
+        user: {
+          id: newUser._id,
+          username: newUser.username,
+          email: newUser.email,
+        },
+      });
+    });
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
@@ -116,4 +126,4 @@ const localLogin = async (req, res, next) => {
   })(req, res, next);
 };
 
-export { status, logout, requestOTP, verifyOtp, localLogin, googleCallback};
+export { status, logout, requestOTP, verifyOtp, localLogin, callback};
