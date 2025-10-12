@@ -3,11 +3,16 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./theme-toggle";
 import { useState } from "react";
 import LoginModel from "@/components/auth/LoginModel";
+import SignUpModel from "@/components/auth/SignUpModel";
 
 export default function Home() {
-  const [login, setLogin] = useState(true);
+  const [login, setLogin] = useState(false);
+  const [signup, setSignup] = useState(false);
   const handleGoogle = () => {
     window.location.href = "http://localhost:4000/auth/google";
+  };
+  const handleLogout = () => {
+    window.location.href = "http://localhost:4000/auth/logout";
   };
 
   return (
@@ -24,11 +29,20 @@ export default function Home() {
         </p>
         <div className="space-x-2">
           <Button onClick={() => setLogin(true)}>Login</Button>
-          <Button variant="secondary"> Sign Up</Button>
-          <Button variant="secondary" onClick={handleGoogle}>Google</Button>
+          <Button variant="secondary" onClick={() => setSignup(true)}>
+            {" "}
+            Sign Up
+          </Button>
+          <Button variant="secondary" onClick={handleGoogle}>
+            Google
+          </Button>
+          <Button variant="destructive" onClick={handleLogout}>
+            LogOut
+          </Button>
         </div>
         <ThemeToggle />
         <LoginModel open={login} onOpenChange={setLogin} />
+        <SignUpModel open={signup} onOpenChange={setSignup} />
       </div>
     </div>
   );
