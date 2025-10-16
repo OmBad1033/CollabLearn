@@ -8,15 +8,15 @@ import passport from "passport";
 import routes from "./routes/index.mjs";
 import "./utils/passport.js";
 import cors from "cors";
-
+import { connectNeo4j } from "./config/neo4j.js";
+import connectMongoDB from "./config/mongo.js";
 
 const app = express();
 dotenv.config();
 const port = 4000;
-mongoose
-  .connect(process.env.MONGO_DB_URL)
-  .then(() => console.log("Connected to database"))
-  .catch((e) => console.log(e));
+
+await connectMongoDB();
+await connectNeo4j();
 
 app.use(
   cors({
@@ -33,7 +33,7 @@ app.use(
     resave: false,
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 1 days
-      httpOnly: true
+      httpOnly: true,
     },
     store: MongoStore.create({
       client: mongoose.connection.getClient(),

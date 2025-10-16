@@ -1,9 +1,10 @@
 import { User } from "../models/userModel.js";
-import { otpGenerator } from "../helper/otpGenerator.js";
+import { otpGenerator } from "../utils/otpGenerator.js";
 import { OTP } from "../models/otpModel.js";
 import { sendMail } from "../utils/email.js";
 import bcrypt from "bcrypt";
 import passport from "passport";
+import { createUser } from "../services/userService.js";
 
 const status = (req, res) => {
   console.log("auth/status", req.user);
@@ -11,7 +12,7 @@ const status = (req, res) => {
 };
 
 const callback = (req, res) => {
-    //will redirect to frontend staus page
+  //will redirect to frontend status page
   return res.redirect("http://localhost:3000/status");
 };
 
@@ -78,12 +79,7 @@ const verifyOtp = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid OTP" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({
-      email,
-      username,
-      password: hashedPassword,
-    });
-    await newUser.save();
+    const newUser = await createUser({ email, username, hashedPassword });
     await OTP.deleteOne({ email });
     req.logIn(newUser, (err) => {
       if (err) return next(err);
@@ -126,4 +122,4 @@ const localLogin = async (req, res, next) => {
   })(req, res, next);
 };
 
-export { status, logout, requestOTP, verifyOtp, localLogin, callback};
+export { status, logout, requestOTP, verifyOtp, localLogin, callback };
