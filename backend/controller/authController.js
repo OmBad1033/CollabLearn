@@ -8,6 +8,7 @@ import { createUser } from "../services/userService.js";
 
 const status = (req, res) => {
   console.log("auth/status", req.user);
+  console.log("is Authenticated:", req.isAuthenticated());
   return req.user ? res.send(req.user) : res.sendStatus(401);
 };
 
