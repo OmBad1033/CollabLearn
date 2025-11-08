@@ -1,4 +1,5 @@
 import {postRepository} from "../repository/postRepository.js";
+import { s3Service } from "./s3Service.js";
 
 export const createPost = async (userId, postData) => {
     const post = {
@@ -18,3 +19,17 @@ export const getPostById = async (postId) => {
   if(!post) throw new Error("Post not found");
   return post;
 };
+
+export const requestUploadUrls = async (userId, files) => {
+  const uploadUrlsPromise = files.map(async(file)=> {
+    const {uploadUrl, key, expiresIn } = await s3Service.generateUploadUrl(userId, file.fileName, file.fileType, file.contentType);
+    return {
+      fileName: file.name,
+      fileType: file.type,
+      uploadUrl,
+      key,
+      expiresIn,
+    }
+  })
+  return Promise.all(uploadUrlsPromise);
+}
