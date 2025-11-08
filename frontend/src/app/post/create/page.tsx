@@ -1,8 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 function Page() {
+    const router = useRouter();
   const checkPost = async (e: React.FormEvent<HTMLFormElement>) => {
     console.log("Form Submitted");
     setOnSubmit(true);
@@ -34,6 +36,15 @@ function Page() {
     const assetUrls = await uploadAssets(uploadUrls, files);
 
     console.log("Asset Urls:", assetUrls);
+    const postCreated = await createPost(title as string, content as string, assetUrls);
+    if(postCreated) {
+        setOnSubmit(false);
+        router.push("/post");
+    } else {
+        setOnSubmit(false);
+        alert("Error while creating post");
+    }
+
   };
 
   const getUploadUrls = async (
@@ -66,11 +77,11 @@ function Page() {
       expiresIn: number;
     }[],
     files: File[]
-  ) => {
+  ): Promise<string[] | []> => {
     if (uploadUrls.length === 0) {
       setOnSubmit(false);
       alert("Error while requesting upload urls");
-      return;
+      return [];
     }
     const uploadPromises = uploadUrls.map(async (upload, index) => {
       const url = upload.uploadUrl;
@@ -89,6 +100,31 @@ function Page() {
       console.log("File uploaded:", upload.key);
       return upload.key;
     });
+    return Promise.all(uploadPromises);
+  };
+
+  const createPost = async (title: string, content: string, assetUrls: string[]): Promise<boolean> => {
+
+    try {
+        const res = await fetch('http://localhost:4000/post/new', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ title, content, assetUrls }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          console.log("Post created:", data.post);
+          return true;
+        } else {
+          console.log("Error while creating post:", res);
+          return false;
+        }
+
+    } catch (error) {
+      console.log("Error while creating post:", error);
+      return false;
+    }
   };
 
   const [onSubmit, setOnSubmit] = useState(false);
