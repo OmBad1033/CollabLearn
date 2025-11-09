@@ -33,3 +33,11 @@ export const requestUploadUrls = async (userId, files) => {
   })
   return Promise.all(uploadUrlsPromise);
 }
+
+export const getAllPostsByUser = async (userId) => {
+  console.log("Finding posts by userID")
+  const posts = await postRepository.findAllPostByUserId(userId)
+  console.log(posts);
+  return posts
+
+}

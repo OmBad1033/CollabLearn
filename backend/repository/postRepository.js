@@ -1,5 +1,5 @@
 
-import { GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { dynamoClient, TABLES } from "../config/dynamo.js"
 import { v4 as uuidv4 } from "uuid";
 
@@ -37,6 +37,22 @@ class PostRepository {
 
         const result = await dynamoClient.send(new GetCommand(params));
         return result.Item || null;
+    }
+
+    async findAllPostByUserId(userId) {
+        console.log("before finding the posts")
+        const params = {
+            TableName: this.tableName,
+            IndexName: 'userId-createdAt-index', // have create a GSI for userId
+            KeyConditionExpression: 'userId = :uid',
+            ExpressionAttributeValues: {
+                ":uid": userId
+            },
+            ScanIndexForward: false // sort by createdAt DESC (latest first)
+        }
+        const result = await dynamoClient.send(new QueryCommand(params));
+        console.log("Result form Repo:",result);
+        return result.Items || []
     }
 
 }
