@@ -40,7 +40,6 @@ class PostRepository {
     }
 
     async findAllPostByUserId(userId) {
-        console.log("before finding the posts")
         const params = {
             TableName: this.tableName,
             IndexName: 'userId-createdAt-index', // have create a GSI for userId
@@ -51,7 +50,6 @@ class PostRepository {
             ScanIndexForward: false // sort by createdAt DESC (latest first)
         }
         const result = await dynamoClient.send(new QueryCommand(params));
-        console.log("Result form Repo:",result);
         return result.Items || []
     }
 

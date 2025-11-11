@@ -68,10 +68,9 @@ export const requestUploadUrls = async (req, res) => {
 export const getAllPost = async (req, res) => {
   const userId = req.user._id.toString();
   try {
-    console.log(userId)
     const posts = await getAllPostsByUser(userId);
+    console.log("Got all posts")
     res.status(200).json(posts)
-
   } catch (error) {
     console.log("Error while getting all posts",error);
     res.sendStatus(500);
