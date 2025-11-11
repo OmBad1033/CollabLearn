@@ -13,8 +13,8 @@
   "description": "",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.911.0",
-    "@aws-sdk/lib-dynamodb": "^3.911.0",
     "@aws-sdk/client-s3": "^3.913.0",
+    "@aws-sdk/lib-dynamodb": "^3.911.0",
     "@aws-sdk/s3-request-presigner": "^3.913.0",
     "bcrypt": "^6.0.0",
     "connect-mongo": "^5.1.0",
@@ -23,6 +23,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "kafkajs": "^2.2.4",
     "mongodb": "^6.20.0",
     "mongoose": "^8.18.3",
     "neo4j-driver": "^6.0.0",
