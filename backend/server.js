@@ -10,6 +10,8 @@ import "./utils/passport.js";
 import cors from "cors";
 import { connectNeo4j } from "./config/neo4j.js";
 import connectMongoDB from "./config/mongo.js";
+import { producer, consumer } from "./config/kafka.js";
+import "./kafka/consumer.js";
 
 const app = express();
 dotenv.config();
@@ -17,6 +19,15 @@ const port = 4000;
 
 await connectMongoDB();
 await connectNeo4j();
+
+const closeKafka = async () => {
+  producer.disconnect()
+  consumer.disconnect()
+  console.log("Disconnected Kafka 👋🏻")
+}
+
+process.on('SIGINT', closeKafka)
+process.on('SIGTERM', closeKafka)
 
 app.use(
   cors({
@@ -44,6 +55,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(routes);
 
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log("Server Started", port);
+  try {
+    console.log("✅ Trying to connect to Producer");
+    await producer.connect();
+    console.log("✅ Producer connected");
+  } catch (err) {
+    console.error("Producer failed to connect:", err);
+  }
+  console.log('✅ Application ready');
 });
