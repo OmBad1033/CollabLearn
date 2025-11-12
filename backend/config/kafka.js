@@ -9,5 +9,9 @@ const kafka = new Kafka({
   },
 });
 
-export const producer = kafka.producer()
-export const consumer = kafka.consumer({ groupId: 'test-group' })
+export const producer = kafka.producer();
+export const consumer = kafka.consumer({ groupId: "collab-learn-consumer" });
+
+export const TOPIC = {
+  POST_CREATED: "post_created",
+};

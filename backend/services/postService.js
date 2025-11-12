@@ -1,8 +1,8 @@
 import { postRepository } from "../repository/postRepository.js";
 import { s3Service } from "./s3Service.js";
-import { producer } from "../config/kafka.js";
+import { postCreatedEvent } from "../kafka/producers/postProducer.js";
 export const createPost = async (userId, postData) => {
-  const post = {
+  let post = {
     userId,
     content: postData.content,
     title: postData.title,
@@ -10,19 +10,14 @@ export const createPost = async (userId, postData) => {
     likesCount: 0,
     commentsCount: 0,
   };
+  post = await postRepository.createPost(post);
   try {
-    console.log("👀 Connected to producer!!")
-    await producer.send({
-      topic:"test-topic",
-      messages: [
-        { value : `This ${userId} is creating a post: ${postData.content}`}
-      ]
-    })
+    postCreatedEvent(post)
     console.log("🍀Event Sent")
   } catch (error) {
-    console.log("Failed Connecting to producer");
+    console.error("💥Failed Connecting to producer");
   }
-  return postRepository.createPost(post);
+  return post;
 };
 
 export const getPostById = async (postId) => {

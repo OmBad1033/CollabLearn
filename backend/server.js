@@ -10,8 +10,9 @@ import "./utils/passport.js";
 import cors from "cors";
 import { connectNeo4j } from "./config/neo4j.js";
 import connectMongoDB from "./config/mongo.js";
-import { producer, consumer } from "./config/kafka.js";
-import "./kafka/consumer.js";
+import { kafkaProducer } from "./kafka/producer.js";
+import { registerConsumers } from "./kafka/consumers/index.js";
+import { kafkaConsumer } from "./kafka/consumer.js";
 
 const app = express();
 dotenv.config();
@@ -20,14 +21,17 @@ const port = 4000;
 await connectMongoDB();
 await connectNeo4j();
 
-const closeKafka = async () => {
-  producer.disconnect()
-  consumer.disconnect()
-  console.log("Disconnected Kafka 👋🏻")
-}
+process.on('SIGTERM', async () => {
+  await kafkaConsumer.disconnect();
+  await kafkaProducer.disconnect();
+  process.exit(0);
+});
 
-process.on('SIGINT', closeKafka)
-process.on('SIGTERM', closeKafka)
+process.on('SIGINT', async () => {
+  await kafkaConsumer.disconnect();
+  await kafkaProducer.disconnect();
+  process.exit(0);
+});
 
 app.use(
   cors({
@@ -55,14 +59,20 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(routes);
 
+const initializeKafka = async () => {
+  try {
+    console.log("✅ Trying to connect to Consumer");
+    registerConsumers(kafkaConsumer);
+    await kafkaConsumer.start();
+  } catch (err) {
+    console.error("consumer failed to connect:", err);
+  }
+};
+
+await initializeKafka()
+
 app.listen(port, async () => {
   console.log("Server Started", port);
-  try {
-    console.log("✅ Trying to connect to Producer");
-    await producer.connect();
-    console.log("✅ Producer connected");
-  } catch (err) {
-    console.error("Producer failed to connect:", err);
-  }
-  console.log('✅ Application ready');
+  await kafkaProducer.connect();
+  console.log("✅ Application ready!!");
 });
